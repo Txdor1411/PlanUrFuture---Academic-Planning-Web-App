@@ -6,9 +6,11 @@ import { ArrowUpRight, GraduationCap } from "lucide-react";
 import { Button } from "./ui/button";
 
 const links = [
-  { href: "#features", label: "Features" },
-  { href: "#how-it-works", label: "How it works" },
-  { href: "#demo", label: "Demo" },
+  { href: "/universities", label: "Universitati" },
+  { href: "/activities", label: "Activitati" },
+  { href: "/calendar", label: "Calendar" },
+  { href: "#features", label: "Funcționalități" },
+  { href: "#how-it-works", label: "Cum funcționează" },
 ];
 
 export function Navbar() {
@@ -43,14 +45,12 @@ export function Navbar() {
 
         <div className="flex items-center gap-3">
           <motion.a
-            href="https://platform.domeniu.com"
-            target="_blank"
-            rel="noreferrer"
+            href="/auth"
             whileHover={{ scale: 1.03 }}
             whileTap={{ scale: 0.98 }}
           >
             <Button size="md" className="shadow-[0_12px_40px_rgba(56,189,248,0.25)]">
-              Get Started
+              Începe acum
               <ArrowUpRight className="h-4 w-4" />
             </Button>
           </motion.a>

@@ -15,24 +15,22 @@ export function CTASection() {
         <div className="relative flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
           <div className="space-y-3">
             <p className="text-sm font-semibold uppercase tracking-[0.2em] text-sky-200">
-              Ready?
+              Ești pregătit?
             </p>
             <h3 className="text-3xl font-semibold text-white sm:text-4xl">
-              Start building your future today
+              Începe să-ți construiești viitorul chiar azi
             </h3>
             <p className="max-w-xl text-lg text-slate-200">
-              Join students turning their ambition into actionable plans with AI guidance, mentors, and crystal-clear milestones.
+              Alătură-te elevilor și studenților care își transformă ambiția în planuri concrete, cu ghidare AI, mentori și etape clare.
             </p>
           </div>
           <motion.a
-            href="https://platform.domeniu.com"
-            target="_blank"
-            rel="noreferrer"
+            href="/auth"
             whileHover={{ scale: 1.03 }}
             whileTap={{ scale: 0.97 }}
           >
             <Button size="lg" className="shadow-[0_20px_60px_rgba(56,189,248,0.35)]">
-              Get Started
+              Începe acum
               <ArrowUpRight className="h-5 w-5" />
             </Button>
           </motion.a>

@@ -39,34 +39,32 @@ export function Hero() {
               variants={item}
               className="inline-flex w-fit items-center gap-2 rounded-full bg-white/5 px-3 py-2 text-xs font-semibold text-slate-200 ring-1 ring-white/10"
             >
-              Guided by AI • Built for students
+              Ghidat de AI • Creat pentru elevi și studenți
             </motion.div>
             <motion.h1
               variants={item}
               className="text-balance text-4xl font-semibold leading-tight text-white sm:text-5xl lg:text-6xl"
             >
-              Plan Your Future. <span className="text-gradient">Step by Step.</span>
+              Planifică-ți viitorul. <span className="text-gradient">Pas cu pas.</span>
             </motion.h1>
             <motion.p
               variants={item}
               className="max-w-xl text-lg leading-8 text-slate-300"
             >
-              Build a personalized academic roadmap with AI guidance, university exploration, mentorship, and smart tracking—everything you need to move from intention to acceptance.
+              Construiește un plan academic personalizat cu ghidare AI, explorare de universități, mentorat și monitorizare inteligentă - tot ce ai nevoie ca să treci de la intenție la admitere.
             </motion.p>
             <motion.div variants={item} className="flex flex-wrap items-center gap-4">
               <Button
                 as="a"
-                href="https://platform.domeniu.com"
-                target="_blank"
-                rel="noreferrer"
+                href="/auth"
                 size="lg"
               >
-                Get Started
+                Începe acum
                 <ArrowRight className="h-5 w-5" />
               </Button>
               <Button as="a" href="#how-it-works" variant="ghost" size="lg" className="gap-2">
                 <Play className="h-4 w-4 text-sky-300" />
-                See how it works
+                Vezi cum funcționează
               </Button>
             </motion.div>
             <motion.div
@@ -75,11 +73,11 @@ export function Hero() {
             >
               <span className="flex items-center gap-2 rounded-full bg-white/5 px-3 py-1 ring-1 ring-white/5">
                 <span className="h-2 w-2 rounded-full bg-emerald-400" />
-                Live mentorship matches
+                Potriviri live cu mentori
               </span>
               <span className="flex items-center gap-2 rounded-full bg-white/5 px-3 py-1 ring-1 ring-white/5">
                 <span className="h-2 w-2 rounded-full bg-sky-400" />
-                Instant AI roadmap
+                Foaie de parcurs AI instant
               </span>
             </motion.div>
           </div>
@@ -105,25 +103,25 @@ function MockDashboard() {
       <div className="relative flex flex-col gap-4">
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-sm text-slate-400">Your roadmap</p>
-            <h3 className="text-xl font-semibold text-white">Spring 2026 · 12 weeks</h3>
+            <p className="text-sm text-slate-400">Planul tău</p>
+            <h3 className="text-xl font-semibold text-white">Primăvara 2026 · 12 săptămâni</h3>
           </div>
           <div className="rounded-full bg-white/5 px-3 py-1 text-xs text-slate-200 ring-1 ring-white/10">
-            AI-guided
+            Ghidat de AI
           </div>
         </div>
 
         <div className="grid gap-3 sm:grid-cols-3">
-          {["Research", "Applications", "Scholarships"].map((label, idx) => (
+          {["Cercetare", "Aplicări", "Burse"].map((label, idx) => (
             <div key={label} className="rounded-2xl bg-white/5 p-4 ring-1 ring-white/10">
               <div className="flex items-center justify-between text-xs text-slate-400">
                 <span>{label}</span>
-                <span>{idx === 0 ? "Week 1" : idx === 1 ? "Week 5" : "Week 8"}</span>
+                <span>{idx === 0 ? "Săptămâna 1" : idx === 1 ? "Săptămâna 5" : "Săptămâna 8"}</span>
               </div>
               <p className="mt-3 text-sm font-semibold text-white">
-                {idx === 0 && "Identify top 5 programs and entry requirements."}
-                {idx === 1 && "Submit 3 priority applications with essays."}
-                {idx === 2 && "Secure 2 funding options and deadlines."}
+                {idx === 0 && "Identifică primele 5 programe și cerințele de admitere."}
+                {idx === 1 && "Trimite 3 aplicații prioritare împreună cu eseurile."}
+                {idx === 2 && "Asigură 2 opțiuni de finanțare și termenele lor."}
               </p>
             </div>
           ))}
@@ -134,12 +132,12 @@ function MockDashboard() {
             <div className="flex items-center gap-3">
               <div className="h-10 w-10 rounded-full bg-gradient-to-br from-sky-500 to-fuchsia-500" />
               <div>
-                <p className="text-slate-400">Mentor session</p>
-                <p className="font-semibold text-white">Thursday · 5:00 PM</p>
+                <p className="text-slate-400">Sesiune cu mentor</p>
+                <p className="font-semibold text-white">Joi · 17:00</p>
               </div>
             </div>
             <span className="rounded-full bg-white/5 px-3 py-1 text-xs text-slate-200 ring-1 ring-white/10">
-              Confirmed
+              Confirmat
             </span>
           </div>
         </div>

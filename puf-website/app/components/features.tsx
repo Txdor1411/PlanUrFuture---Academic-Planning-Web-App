@@ -14,33 +14,33 @@ import { Card } from "./ui/card";
 
 const featureList = [
   {
-    title: "AI-powered roadmap",
-    description: "Instant plans that adapt to your goals, deadlines, and study pace.",
+    title: "Foaie de parcurs cu AI",
+    description: "Planuri instant care se adaptează obiectivelor, termenelor și ritmului tău de studiu.",
     icon: Sparkles,
   },
   {
-    title: "University explorer",
-    description: "Discover programs worldwide with requirements, costs, and outcomes.",
+    title: "Explorer de universități",
+    description: "Descoperă programe din toată lumea cu cerințe, costuri și perspective.",
     icon: Compass,
   },
   {
-    title: "Mentorship system",
-    description: "Pair with mentors who review applications and keep you accountable.",
+    title: "Sistem de mentorat",
+    description: "Conectează-te cu mentori care îți revizuiesc aplicațiile și te mențin pe drumul bun.",
     icon: Users,
   },
   {
-    title: "Activity tracking",
-    description: "Progress check-ins, milestones, and reminders across devices.",
+    title: "Monitorizarea activităților",
+    description: "Verificări de progres, etape și remindere pe toate dispozitivele.",
     icon: LineChart,
   },
   {
-    title: "Smart calendar",
-    description: "Sync deadlines, interviews, and study blocks in one smart view.",
+    title: "Calendar inteligent",
+    description: "Sincronizează termene, interviuri și sesiuni de studiu într-o singură vedere.",
     icon: CalendarClock,
   },
   {
-    title: "Scholarship focus",
-    description: "Surface best-fit scholarships with tailored requirements and steps.",
+    title: "Focus pe burse",
+    description: "Găsește bursele potrivite cu cerințe și pași adaptați profilului tău.",
     icon: GraduationCap,
   },
 ];
@@ -50,13 +50,13 @@ export function Features() {
     <Section id="features">
       <div className="flex flex-col gap-4">
         <p className="text-sm font-semibold uppercase tracking-[0.2em] text-sky-300/80">
-          What you get
+          Ce primești
         </p>
         <h2 className="text-balance text-3xl font-semibold text-white sm:text-4xl">
-          Tools that move students forward
+          Instrumente care îi ajută pe studenți să avanseze
         </h2>
         <p className="max-w-2xl text-lg text-slate-300">
-          Every feature is designed to remove friction—so you can focus on making the right decisions, not managing spreadsheets.
+          Fiecare funcționalitate este gândită să elimine fricțiunea, ca tu să te concentrezi pe deciziile potrivite, nu pe tabele.
         </p>
       </div>
 

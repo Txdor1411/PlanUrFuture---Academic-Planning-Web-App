@@ -12,18 +12,16 @@ export function Footer() {
           </div>
           <div className="flex items-center gap-3 text-sm text-slate-400">
             <Link href="#features" className="hover:text-white">
-              Features
+              Funcționalități
             </Link>
             <Link href="#how-it-works" className="hover:text-white">
-              How it works
+              Cum funcționează
             </Link>
             <a
-              href="https://platform.domeniu.com"
-              target="_blank"
-              rel="noreferrer"
+              href="/auth"
               className="hover:text-white"
             >
-              Platform
+              Platformă
             </a>
           </div>
           <div className="flex items-center gap-3 text-slate-400">
@@ -35,7 +33,7 @@ export function Footer() {
             </a>
           </div>
         </div>
-        <p className="text-xs text-slate-500">© {new Date().getFullYear()} PlanFuture. All rights reserved.</p>
+        <p className="text-xs text-slate-500">© {new Date().getFullYear()} PlanFuture. Toate drepturile rezervate.</p>
       </div>
     </footer>
   );
