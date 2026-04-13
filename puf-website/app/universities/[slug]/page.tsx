@@ -28,6 +28,7 @@ export default async function UniversityDetailsPage({ params }: UniversityDetail
       <div className="relative overflow-hidden text-slate-100 min-h-screen bg-slate-950 w-full">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_0%_0%,_rgba(168,85,247,0.16),_transparent_40%),radial-gradient(circle_at_100%_0%,_rgba(56,189,248,0.16),_transparent_35%)]" />
 
+
       <main className="relative mx-auto flex w-full max-w-6xl flex-col gap-8 px-6 py-10 sm:px-8 lg:px-10">
         <div className="flex flex-wrap items-center gap-3 text-sm">
           <Link
