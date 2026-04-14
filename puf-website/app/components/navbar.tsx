@@ -1,8 +1,9 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { motion } from "framer-motion";
-import { ArrowUpRight, GraduationCap } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
 import { Button } from "./ui/button";
 
 const links = [
@@ -23,9 +24,13 @@ export function Navbar() {
     >
       <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-6 py-4 sm:px-8 lg:px-10">
         <Link href="#" className="flex items-center gap-3 text-sm font-semibold text-white">
-          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white/5 ring-1 ring-white/10">
-            <GraduationCap className="h-5 w-5 text-sky-300" />
-          </div>
+          <Image
+            src="/puff_logo_gradient.png"
+            alt="PUF logo"
+            width={40}
+            height={40}
+            className="h-10 w-10 object-contain"
+          />
           <span className="tracking-tight">PlanFuture</span>
         </Link>
 

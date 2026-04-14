@@ -16,6 +16,9 @@ export const metadata: Metadata = {
   title: "PlanFuture Platform | Planifică-ți Viitorul Academic",
   description:
     "Platformă web pentru planificare academică: onboarding personalizat, explorare universități, activități, mentorat și AI planner.",
+  icons: {
+    icon: "/favicon.ico",
+  },
 };
 
 export default function RootLayout({

@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import {
   LayoutDashboard,
@@ -107,9 +108,13 @@ export default function Sidebar({ user, onSignOut, isMobileOpen, setIsMobileOpen
         <div className="flex items-center justify-between border-b border-slate-700/50 px-6 py-4">
           {!isCollapsed && (
             <Link href="/" className="flex items-center gap-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-sky-500 to-fuchsia-500">
-                <GraduationCap className="h-5 w-5 text-white" />
-              </div>
+              <Image
+                src="/puff_logo_gradient.png"
+                alt="PUF logo"
+                width={32}
+                height={32}
+                className="h-8 w-8 object-contain"
+              />
               <span className="font-bold text-white">PlanFuture</span>
             </Link>
           )}
@@ -196,9 +201,13 @@ export default function Sidebar({ user, onSignOut, isMobileOpen, setIsMobileOpen
             {/* Header with Close Button */}
             <div className="flex items-center justify-between border-b border-slate-700/50 px-6 py-4">
               <div className="flex items-center gap-2">
-                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-sky-500 to-fuchsia-500">
-                  <GraduationCap className="h-5 w-5 text-white" />
-                </div>
+                <Image
+                  src="/puff_logo_gradient.png"
+                  alt="PUF logo"
+                  width={32}
+                  height={32}
+                  className="h-8 w-8 object-contain"
+                />
                 <span className="font-bold text-white">PlanFuture</span>
               </div>
               <button
