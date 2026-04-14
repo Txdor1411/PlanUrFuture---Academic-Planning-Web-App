@@ -4,8 +4,6 @@ import { motion } from "framer-motion";
 import { CalendarDays, CheckCircle2, Clock3, Flame, GraduationCap } from "lucide-react";
 import { Section } from "./section";
 import { Card } from "./ui/card";
-import { SplineDemo } from "./spline-demo";
-import { SplineDemo2 } from "./spline-demo-2";
 
 export function DemoSection() {
   return (
@@ -114,46 +112,6 @@ export function DemoSection() {
               </div>
             </div>
           </div>
-        </Card>
-      </motion.div>
-
-      <motion.div
-        initial={{ opacity: 0, y: 24 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, amount: 0.35 }}
-        transition={{ duration: 0.7, ease: "easeOut", delay: 0.1 }}
-      >
-        <Card className="p-3 sm:p-4">
-          <div className="mb-4 flex flex-wrap items-center justify-between gap-3 px-2">
-            <div>
-              <p className="text-sm text-slate-400">Traseu vizual</p>
-              <h3 className="text-xl font-semibold text-white sm:text-2xl">Scenă interactivă Spline</h3>
-            </div>
-            <p className="max-w-md text-sm text-slate-300">
-              Modelul este încărcat direct din Spline și poate fi explorat interactiv în pagină.
-            </p>
-          </div>
-          <SplineDemo />
-        </Card>
-      </motion.div>
-
-      <motion.div
-        initial={{ opacity: 0, y: 24 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, amount: 0.35 }}
-        transition={{ duration: 0.7, ease: "easeOut", delay: 0.2 }}
-      >
-        <Card className="p-3 sm:p-4">
-          <div className="mb-4 flex flex-wrap items-center justify-between gap-3 px-2">
-            <div>
-              <p className="text-sm text-slate-400">Scenă 3D</p>
-              <h3 className="text-xl font-semibold text-white sm:text-2xl">Exploră mediul interactiv</h3>
-            </div>
-            <p className="max-w-md text-sm text-slate-300">
-              O vizualizare imersivă a spațiului tău de lucru, creată cu Spline.
-            </p>
-          </div>
-          <SplineDemo2 />
         </Card>
       </motion.div>
     </Section>
