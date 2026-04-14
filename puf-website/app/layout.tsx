@@ -13,9 +13,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "PlanFuture Platform | Planifică-ți Viitorul Academic",
+  title: "Plan Your Future",
   description:
-    "Platformă web pentru planificare academică: onboarding personalizat, explorare universități, activități, mentorat și AI planner.",
+    "Empowering students to plan their academic journey with personalized guidance, university exploration, opportunities, and mentorship all in one place.",
   icons: {
     icon: "/favicon.ico",
   },
