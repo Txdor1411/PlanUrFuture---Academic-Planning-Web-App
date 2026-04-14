@@ -15,7 +15,7 @@ export function Footer() {
               height={40}
               className="h-10 w-10 object-contain"
             />
-            <span className="tracking-tight">PlanFuture</span>
+            <span className="tracking-tight">Plan Ur Future</span>
           </div>
           <div className="flex items-center gap-3 text-sm text-slate-400">
             <Link href="#features" className="hover:text-white">
@@ -40,7 +40,7 @@ export function Footer() {
             </a>
           </div>
         </div>
-        <p className="text-xs text-slate-500">© {new Date().getFullYear()} PlanFuture. Toate drepturile rezervate.</p>
+        <p className="text-xs text-slate-500">© {new Date().getFullYear()} Plan Ur Future. Toate drepturile rezervate.</p>
       </div>
     </footer>
   );

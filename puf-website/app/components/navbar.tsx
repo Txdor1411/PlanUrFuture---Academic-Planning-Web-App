@@ -31,7 +31,7 @@ export function Navbar() {
             height={40}
             className="h-10 w-10 object-contain"
           />
-          <span className="tracking-tight">PlanFuture</span>
+          <span className="tracking-tight">Plan Ur Future</span>
         </Link>
 
         <div className="hidden items-center gap-8 text-sm text-slate-200 md:flex">

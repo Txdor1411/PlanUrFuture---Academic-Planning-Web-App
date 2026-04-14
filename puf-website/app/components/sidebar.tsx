@@ -115,7 +115,7 @@ export default function Sidebar({ user, onSignOut, isMobileOpen, setIsMobileOpen
                 height={32}
                 className="h-8 w-8 object-contain"
               />
-              <span className="font-bold text-white">PlanFuture</span>
+              <span className="font-bold text-white">Plan Ur Future</span>
             </Link>
           )}
           <button
@@ -208,7 +208,7 @@ export default function Sidebar({ user, onSignOut, isMobileOpen, setIsMobileOpen
                   height={32}
                   className="h-8 w-8 object-contain"
                 />
-                <span className="font-bold text-white">PlanFuture</span>
+                <span className="font-bold text-white">Plan Ur Future</span>
               </div>
               <button
                 onClick={() => setMobileOpen(false)}
