@@ -9,7 +9,7 @@ export function Footer() {
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-3 text-sm font-semibold text-white">
             <Image
-              src="/puff_logo_gradient.png"
+              src="/puff_logo_gradient-removebg-preview.png"
               alt="PUF logo"
               width={40}
               height={40}

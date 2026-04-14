@@ -109,7 +109,7 @@ export default function Sidebar({ user, onSignOut, isMobileOpen, setIsMobileOpen
           {!isCollapsed && (
             <Link href="/" className="flex items-center gap-2">
               <Image
-                src="/puff_logo_gradient.png"
+                src="/puff_logo_gradient-removebg-preview.png"
                 alt="PUF logo"
                 width={32}
                 height={32}
@@ -202,7 +202,7 @@ export default function Sidebar({ user, onSignOut, isMobileOpen, setIsMobileOpen
             <div className="flex items-center justify-between border-b border-slate-700/50 px-6 py-4">
               <div className="flex items-center gap-2">
                 <Image
-                  src="/puff_logo_gradient.png"
+                  src="/puff_logo_gradient-removebg-preview.png"
                   alt="PUF logo"
                   width={32}
                   height={32}
