@@ -3,6 +3,15 @@ const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const publicAppUrl = process.env.NEXT_PUBLIC_APP_URL;
 
+function isLocalhostUrl(value: string) {
+  try {
+    const url = new URL(value);
+    return url.hostname === "localhost" || url.hostname === "127.0.0.1";
+  } catch {
+    return false;
+  }
+}
+
 export function hasSupabaseEnv() {
   return Boolean(supabaseUrl && supabaseAnonKey);
 }
@@ -35,12 +44,26 @@ export function getServiceRoleKey() {
 }
 
 export function getAppBaseUrl() {
-  if (publicAppUrl) {
-    return publicAppUrl;
+  if (typeof window !== "undefined") {
+    const currentOrigin = window.location.origin;
+
+    if (publicAppUrl) {
+      const envIsLocalhost = isLocalhostUrl(publicAppUrl);
+      const originIsLocalhost = isLocalhostUrl(currentOrigin);
+
+      // If production is live but env is still localhost, prefer the live origin.
+      if (envIsLocalhost && !originIsLocalhost) {
+        return currentOrigin;
+      }
+
+      return publicAppUrl;
+    }
+
+    return currentOrigin;
   }
 
-  if (typeof window !== "undefined") {
-    return window.location.origin;
+  if (publicAppUrl) {
+    return publicAppUrl;
   }
 
   return process.env.NODE_ENV === "production"
