@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useEffect, useMemo, useState } from "react";
+import { FormEvent, Suspense, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Card } from "@/app/components/ui/card";
@@ -23,6 +23,23 @@ function getSafeNextPath(nextParam: string | null) {
 }
 
 export default function AuthPage() {
+  return (
+    <Suspense
+      fallback={
+        <main className="mx-auto flex min-h-screen w-full max-w-2xl items-center px-6 py-16 sm:px-8">
+          <Card className="w-full space-y-3">
+            <h1 className="text-2xl font-semibold text-white">Se încarcă autentificarea...</h1>
+            <p className="text-slate-300">Pregătim opțiunile de login.</p>
+          </Card>
+        </main>
+      }
+    >
+      <AuthPageContent />
+    </Suspense>
+  );
+}
+
+function AuthPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [mode, setMode] = useState<Mode>("signin");
