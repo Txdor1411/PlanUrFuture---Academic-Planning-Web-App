@@ -1,8 +1,8 @@
 "use client";
 
-import { FormEvent, useMemo, useState } from "react";
+import { FormEvent, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Card } from "@/app/components/ui/card";
 import { Button } from "@/app/components/ui/button";
 import { createClient } from "@/lib/supabase/client";
@@ -10,8 +10,21 @@ import { hasSupabaseEnv } from "@/lib/supabase/env";
 
 type Mode = "signin" | "signup";
 
+function getSafeNextPath(nextParam: string | null) {
+  if (!nextParam) {
+    return "/dashboard";
+  }
+
+  if (nextParam.startsWith("/") && !nextParam.startsWith("//")) {
+    return nextParam;
+  }
+
+  return "/dashboard";
+}
+
 export default function AuthPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [mode, setMode] = useState<Mode>("signin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -19,6 +32,18 @@ export default function AuthPage() {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const envReady = useMemo(() => hasSupabaseEnv(), []);
+  const nextPath = useMemo(
+    () => getSafeNextPath(searchParams.get("next")),
+    [searchParams]
+  );
+
+  useEffect(() => {
+    const errorMessage = searchParams.get("error");
+
+    if (errorMessage) {
+      setMessage(errorMessage);
+    }
+  }, [searchParams]);
 
   async function handleEmailAuth(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -39,16 +64,19 @@ export default function AuthPage() {
           return;
         }
 
-        router.push("/dashboard");
+        router.push(nextPath);
         router.refresh();
         return;
       }
+
+      const callbackUrl = new URL("/auth/callback", window.location.origin);
+      callbackUrl.searchParams.set("next", nextPath);
 
       const { error } = await supabase.auth.signUp({
         email,
         password,
         options: {
-          emailRedirectTo: `${window.location.origin}/auth/callback`,
+          emailRedirectTo: callbackUrl.toString(),
           data: {
             full_name: fullName,
           },
@@ -73,10 +101,13 @@ export default function AuthPage() {
 
     try {
       const supabase = createClient();
+      const callbackUrl = new URL("/auth/callback", window.location.origin);
+      callbackUrl.searchParams.set("next", nextPath);
+
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
-          redirectTo: `${window.location.origin}/auth/callback`,
+          redirectTo: callbackUrl.toString(),
         },
       });
 

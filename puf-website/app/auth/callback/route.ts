@@ -1,14 +1,46 @@
 import { NextResponse } from "next/server";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
+function getSafeNextPath(nextParam: string | null) {
+  if (!nextParam) {
+    return "/dashboard";
+  }
+
+  // Allow only internal paths to avoid open redirect issues.
+  if (nextParam.startsWith("/") && !nextParam.startsWith("//")) {
+    return nextParam;
+  }
+
+  return "/dashboard";
+}
+
 export async function GET(request: Request) {
   const requestUrl = new URL(request.url);
   const code = requestUrl.searchParams.get("code");
+  const error = requestUrl.searchParams.get("error");
+  const errorDescription = requestUrl.searchParams.get("error_description");
+  const next = getSafeNextPath(requestUrl.searchParams.get("next"));
 
-  if (code) {
-    const supabase = await createServerSupabaseClient();
-    await supabase.auth.exchangeCodeForSession(code);
+  if (error) {
+    const authUrl = new URL("/auth", request.url);
+    authUrl.searchParams.set("error", errorDescription ?? error);
+    return NextResponse.redirect(authUrl);
   }
 
-  return NextResponse.redirect(new URL("/dashboard", request.url));
+  if (!code) {
+    const authUrl = new URL("/auth", request.url);
+    authUrl.searchParams.set("error", "Lipsește codul de autentificare Google.");
+    return NextResponse.redirect(authUrl);
+  }
+
+  const supabase = await createServerSupabaseClient();
+  const { error: exchangeError } = await supabase.auth.exchangeCodeForSession(code);
+
+  if (exchangeError) {
+    const authUrl = new URL("/auth", request.url);
+    authUrl.searchParams.set("error", exchangeError.message);
+    return NextResponse.redirect(authUrl);
+  }
+
+  return NextResponse.redirect(new URL(next, request.url));
 }
