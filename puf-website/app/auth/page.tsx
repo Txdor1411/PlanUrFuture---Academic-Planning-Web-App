@@ -6,7 +6,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Card } from "@/app/components/ui/card";
 import { Button } from "@/app/components/ui/button";
 import { createClient } from "@/lib/supabase/client";
-import { hasSupabaseEnv } from "@/lib/supabase/env";
+import { getAppBaseUrl, hasSupabaseEnv } from "@/lib/supabase/env";
 
 type Mode = "signin" | "signup";
 
@@ -69,7 +69,7 @@ export default function AuthPage() {
         return;
       }
 
-      const callbackUrl = new URL("/auth/callback", window.location.origin);
+      const callbackUrl = new URL("/auth/callback", getAppBaseUrl());
       callbackUrl.searchParams.set("next", nextPath);
 
       const { error } = await supabase.auth.signUp({
@@ -101,7 +101,7 @@ export default function AuthPage() {
 
     try {
       const supabase = createClient();
-      const callbackUrl = new URL("/auth/callback", window.location.origin);
+      const callbackUrl = new URL("/auth/callback", getAppBaseUrl());
       callbackUrl.searchParams.set("next", nextPath);
 
       const { error } = await supabase.auth.signInWithOAuth({
