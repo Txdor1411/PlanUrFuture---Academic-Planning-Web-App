@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { getAppBaseUrl } from "@/lib/supabase/env";
 
 function getSafeNextPath(nextParam: string | null) {
   if (!nextParam) {
@@ -16,19 +17,20 @@ function getSafeNextPath(nextParam: string | null) {
 
 export async function GET(request: Request) {
   const requestUrl = new URL(request.url);
+  const appBaseUrl = getAppBaseUrl();
   const code = requestUrl.searchParams.get("code");
   const error = requestUrl.searchParams.get("error");
   const errorDescription = requestUrl.searchParams.get("error_description");
   const next = getSafeNextPath(requestUrl.searchParams.get("next"));
 
   if (error) {
-    const authUrl = new URL("/auth", request.url);
+    const authUrl = new URL("/auth", appBaseUrl);
     authUrl.searchParams.set("error", errorDescription ?? error);
     return NextResponse.redirect(authUrl);
   }
 
   if (!code) {
-    const authUrl = new URL("/auth", request.url);
+    const authUrl = new URL("/auth", appBaseUrl);
     authUrl.searchParams.set("error", "Lipsește codul de autentificare Google.");
     return NextResponse.redirect(authUrl);
   }
@@ -37,10 +39,10 @@ export async function GET(request: Request) {
   const { error: exchangeError } = await supabase.auth.exchangeCodeForSession(code);
 
   if (exchangeError) {
-    const authUrl = new URL("/auth", request.url);
+    const authUrl = new URL("/auth", appBaseUrl);
     authUrl.searchParams.set("error", exchangeError.message);
     return NextResponse.redirect(authUrl);
   }
 
-  return NextResponse.redirect(new URL(next, request.url));
+  return NextResponse.redirect(new URL(next, appBaseUrl));
 }
