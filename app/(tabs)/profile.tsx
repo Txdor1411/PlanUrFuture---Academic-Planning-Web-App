@@ -1,13 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
-import {
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { GlassCard, GlowBackground } from '@/components/puff';
 import { PUF } from '@/constants/theme';
 
