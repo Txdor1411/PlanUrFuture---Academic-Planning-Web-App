@@ -1,9 +1,9 @@
+import { GlassCard, GlowBackground } from '@/components/puff';
+import { PUF } from '@/constants/theme';
 import { Ionicons } from '@expo/vector-icons';
 import React, { useState } from 'react';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { GlassCard, GlowBackground } from '@/components/puff';
-import { PUF } from '@/constants/theme';
 
 const COLLEGES = [
   { name: 'Hartwell University', loc: 'New Haven, CT', score: 72, tier: 'Reach', selectivity: 'Very Selective', cost: '$58k' },
@@ -54,40 +54,44 @@ export default function CollegesScreen() {
   return (
     <GlowBackground variant="low">
       <SafeAreaView style={styles.safe}>
-        {/* Header */}
-        <View style={styles.header}>
-          <Text style={styles.subtitle}>Your list · 12 schools</Text>
-          <Text style={styles.title}>Colleges</Text>
-        </View>
+        <View style={styles.topSection}>
+          {/* Header */}
+          <View style={styles.header}>
+            <Text style={styles.subtitle}>Your list · 12 schools</Text>
+            <Text style={styles.title}>Colleges</Text>
+          </View>
 
-        {/* Search */}
-        <View style={styles.searchRow}>
-          <GlassCard radius={14} padding={0} style={styles.searchBox}>
-            <Ionicons name="search-outline" size={16} color={PUF.textDim} />
-            <Text style={styles.searchPlaceholder}>Search schools, majors…</Text>
-          </GlassCard>
-          <TouchableOpacity style={styles.filterBtn}>
-            <Ionicons name="options-outline" size={18} color="#fff" />
-          </TouchableOpacity>
-        </View>
-
-        {/* Filter chips */}
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.chips}>
-          {FILTERS.map((f, i) => (
-            <TouchableOpacity
-              key={i}
-              onPress={() => setActiveFilter(i)}
-              style={[styles.chip, i === activeFilter && styles.chipActive]}
-            >
-              <Text style={[styles.chipLabel, i === activeFilter && styles.chipLabelActive]}>{f}</Text>
+          {/* Search */}
+          <View style={styles.searchRow}>
+            <GlassCard radius={14} padding={0} style={styles.searchBox}>
+              <Ionicons name="search-outline" size={16} color={PUF.textDim} />
+              <Text style={styles.searchPlaceholder}>Search schools, majors…</Text>
+            </GlassCard>
+            <TouchableOpacity style={styles.filterBtn}>
+              <Ionicons name="options-outline" size={18} color="#fff" />
             </TouchableOpacity>
-          ))}
-        </ScrollView>
+          </View>
+
+          {/* Filter chips */}
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.chips}>
+            {FILTERS.map((f, i) => (
+              <TouchableOpacity
+                key={i}
+                onPress={() => setActiveFilter(i)}
+                style={[styles.chip, i === activeFilter && styles.chipActive]}
+              >
+                <Text style={[styles.chipLabel, i === activeFilter && styles.chipLabelActive]}>{f}</Text>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+        </View>
 
         {/* List */}
         <ScrollView style={styles.list} contentContainerStyle={styles.listContent} showsVerticalScrollIndicator={false}>
-          {COLLEGES.map((c, i) => <CollegeCard key={i} c={c} />)}
-          <View style={{ height: 90 }} />
+          <View style={styles.listInner}>
+            {COLLEGES.map((c, i) => <CollegeCard key={i} c={c} />)}
+            <View style={{ height: 90 }} />
+          </View>
         </ScrollView>
       </SafeAreaView>
     </GlowBackground>
@@ -96,6 +100,7 @@ export default function CollegesScreen() {
 
 const styles = StyleSheet.create({
   safe: { flex: 1 },
+  topSection: { flexShrink: 0 },
   header: { paddingHorizontal: 24, paddingTop: 12, marginBottom: 14 },
   subtitle: { fontSize: 13, color: PUF.textDim },
   title: { fontSize: 36, fontWeight: '700', color: PUF.text, marginTop: 4, letterSpacing: -0.6 },
@@ -105,14 +110,15 @@ const styles = StyleSheet.create({
   searchPlaceholder: { fontSize: 14, color: PUF.textDim },
   filterBtn: { width: 40, height: 40, borderRadius: 14, backgroundColor: PUF.glass, borderWidth: 0.5, borderColor: PUF.glassBorder, alignItems: 'center', justifyContent: 'center' },
 
-  chips: { paddingHorizontal: 24, gap: 6, marginBottom: 14 },
-  chip: { paddingHorizontal: 12, paddingVertical: 6, borderRadius: 14, backgroundColor: PUF.glass, borderWidth: 0.5, borderColor: PUF.glassBorder },
+  chips: { paddingHorizontal: 24, gap: 6, marginBottom: 4 },
+  chip: { height: 32, minWidth: 84, paddingHorizontal: 16, borderRadius: 16, backgroundColor: PUF.glass, borderWidth: 0.5, borderColor: PUF.glassBorder, alignItems: 'center', justifyContent: 'center' },
   chipActive: { backgroundColor: '#fff', borderColor: 'transparent' },
-  chipLabel: { fontSize: 12, fontWeight: '500', color: '#fff' },
-  chipLabelActive: { color: '#1a0b2e' },
+  chipLabel: { fontSize: 12, fontWeight: '500', color: '#fff', lineHeight: 14, includeFontPadding: false },
+  chipLabelActive: { color: '#1a0b2e', includeFontPadding: false },
 
   list: { flex: 1 },
-  listContent: { paddingHorizontal: 16, gap: 10 },
+  listContent: { paddingBottom: 24 },
+  listInner: { paddingHorizontal: 16, gap: 10 },
 
   collegeCard: { marginBottom: 0 },
   cardRow: { flexDirection: 'row', gap: 12 },
