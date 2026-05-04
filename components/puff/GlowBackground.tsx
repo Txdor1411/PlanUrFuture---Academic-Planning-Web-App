@@ -59,21 +59,27 @@ function AnimatedBlob({ config }: { config: BlobConfig }) {
     ).start();
   }, []);
 
+  // Separate the percentage-based position (View) from the animated transform (Animated.View)
+  // because Animated.View's style type rejects bare percentage strings for top/left.
   return (
-    <Animated.View
-      style={[
-        styles.blob,
-        {
-          top: config.top,
-          left: config.left,
+    <View
+      style={{
+        position: 'absolute',
+        top: config.top as any,
+        left: config.left as any,
+      }}
+    >
+      <Animated.View
+        style={{
           width: config.size,
           height: config.size,
           borderRadius: config.size / 2,
           backgroundColor: config.color,
+          opacity: 0.55,
           transform: anim.getTranslateTransform(),
-        },
-      ]}
-    />
+        }}
+      />
+    </View>
   );
 }
 
@@ -103,10 +109,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: PUF.bg,
     overflow: 'hidden',
-  },
-  blob: {
-    position: 'absolute',
-    opacity: 0.55,
   },
   vignette: {
     ...StyleSheet.absoluteFillObject,

@@ -43,8 +43,6 @@ function StrengthBar({ label, val }: { label: string; val: number }) {
 }
 
 export default function ProfileScreen() {
-  const router = useRouter();
-
   return (
     <GlowBackground variant="top">
       <SafeAreaView style={styles.safe}>
