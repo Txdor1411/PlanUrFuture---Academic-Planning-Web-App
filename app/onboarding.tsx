@@ -1,13 +1,7 @@
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
-import {
-  Dimensions,
-  SafeAreaView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { Dimensions, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { GlassCard, GlowBackground, PuffButton, PuffLogo } from '@/components/puff';
 import { PUF } from '@/constants/theme';
 

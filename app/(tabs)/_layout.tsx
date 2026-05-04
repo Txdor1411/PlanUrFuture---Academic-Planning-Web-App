@@ -2,19 +2,25 @@ import { Ionicons } from '@expo/vector-icons';
 import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { Tabs } from 'expo-router';
 import React from 'react';
-import { Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { PUF } from '@/constants/theme';
 
 const TAB_ITEMS = [
-  { name: 'index', label: 'Home', icon: 'home', iconOutline: 'home-outline' },
+  { name: 'index',    label: 'Home',     icon: 'home',   iconOutline: 'home-outline'   },
   { name: 'colleges', label: 'Colleges', icon: 'school', iconOutline: 'school-outline' },
-  { name: 'tasks', label: 'Tasks', icon: 'list', iconOutline: 'list-outline' },
-  { name: 'profile', label: 'You', icon: 'person', iconOutline: 'person-outline' },
+  { name: 'tasks',    label: 'Tasks',    icon: 'list',   iconOutline: 'list-outline'   },
+  { name: 'profile',  label: 'You',      icon: 'person', iconOutline: 'person-outline' },
 ] as const;
 
 function PuffTabBar({ state, navigation }: BottomTabBarProps) {
+  const insets = useSafeAreaInsets();
+
   return (
-    <View style={styles.wrapper} pointerEvents="box-none">
+    <View
+      style={[styles.wrapper, { bottom: Math.max(insets.bottom, 8) + 8 }]}
+      pointerEvents="box-none"
+    >
       <View style={styles.pill}>
         {TAB_ITEMS.map((item, i) => {
           const focused = state.index === i;
@@ -44,12 +50,11 @@ export default function TabLayout() {
       tabBar={(props) => <PuffTabBar {...props} />}
       screenOptions={{ headerShown: false }}
     >
-      <Tabs.Screen name="index" options={{ title: 'Home' }} />
+      <Tabs.Screen name="index"    options={{ title: 'Home' }} />
       <Tabs.Screen name="colleges" options={{ title: 'Colleges' }} />
-      <Tabs.Screen name="tasks" options={{ title: 'Tasks' }} />
-      <Tabs.Screen name="profile" options={{ title: 'You' }} />
-      {/* Hide the old explore tab */}
-      <Tabs.Screen name="explore" options={{ href: null }} />
+      <Tabs.Screen name="tasks"    options={{ title: 'Tasks' }} />
+      <Tabs.Screen name="profile"  options={{ title: 'You' }} />
+      <Tabs.Screen name="explore"  options={{ href: null }} />
     </Tabs>
   );
 }
@@ -57,7 +62,6 @@ export default function TabLayout() {
 const styles = StyleSheet.create({
   wrapper: {
     position: 'absolute',
-    bottom: Platform.OS === 'ios' ? 24 : 16,
     left: 14,
     right: 14,
   },
