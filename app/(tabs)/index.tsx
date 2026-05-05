@@ -1,10 +1,11 @@
+import { GlassCard, GlowBackground, ProgressRing } from '@/components/puff';
+import { PUF } from '@/constants/theme';
+import { useAuth } from '@/context/auth-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React from 'react';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { GlassCard, GlowBackground, ProgressRing } from '@/components/puff';
-import { PUF } from '@/constants/theme';
 
 function DeadlineRow({
   month,
@@ -67,6 +68,11 @@ function MiniTile({
 
 export default function HomeScreen() {
   const router = useRouter();
+  const { user, profile } = useAuth();
+  const initials = user
+    ? user.name.split(' ').slice(0, 2).map(part => part[0]).join('').toUpperCase()
+    : 'MA';
+  const displayName = profile?.full_name ?? user?.email?.split('@')[0] ?? 'Maya';
 
   return (
     <GlowBackground variant="top">
@@ -75,11 +81,11 @@ export default function HomeScreen() {
           {/* Greeting */}
           <View style={styles.greeting}>
             <View style={styles.avatar}>
-              <Text style={styles.avatarLabel}>MA</Text>
+              <Text style={styles.avatarLabel}>{initials}</Text>
             </View>
             <View style={styles.greetingText}>
               <Text style={styles.greetingTime}>Good evening</Text>
-              <Text style={styles.greetingName}>Maya</Text>
+              <Text style={styles.greetingName}>{displayName}</Text>
             </View>
             <TouchableOpacity style={styles.iconBtn}>
               <Ionicons name="notifications-outline" size={20} color="#fff" />

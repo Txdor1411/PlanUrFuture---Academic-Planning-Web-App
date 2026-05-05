@@ -1,9 +1,11 @@
+import { GlassCard, GlowBackground } from '@/components/puff';
+import { PUF } from '@/constants/theme';
+import { useAuth } from '@/context/auth-context';
 import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 import React from 'react';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { GlassCard, GlowBackground } from '@/components/puff';
-import { PUF } from '@/constants/theme';
 
 const STATS = [
   { label: 'GPA', value: '3.86', sub: 'Weighted 4.42' },
@@ -19,7 +21,7 @@ const STRENGTHS = [
   { label: 'Recs', val: 30 },
 ];
 
-const SETTINGS = ['Edit profile', 'Linked accounts', 'Notifications', 'Privacy', 'Sign out'];
+const SETTINGS = ['Edit profile', 'Linked accounts', 'Notifications', 'Privacy'];
 
 function StrengthBar({ label, val }: { label: string; val: number }) {
   const isWeak = val < 50;
@@ -43,6 +45,20 @@ function StrengthBar({ label, val }: { label: string; val: number }) {
 }
 
 export default function ProfileScreen() {
+  const router = useRouter();
+  const { signOut, user, profile } = useAuth();
+
+  const displayName = profile?.full_name ?? user?.name ?? 'Maya Adeyemi';
+  const displayEmail = user?.email ?? 'maya@westlake.edu';
+  const initials = user
+    ? user.name.split(' ').slice(0, 2).map(part => part[0]).join('').toUpperCase()
+    : 'MA';
+
+  async function handleSignOut() {
+    await signOut();
+    router.replace('/sign-in');
+  }
+
   return (
     <GlowBackground variant="top">
       <SafeAreaView style={styles.safe}>
@@ -58,11 +74,11 @@ export default function ProfileScreen() {
           <GlassCard radius={24} padding={20} style={styles.card}>
             <View style={styles.identityRow}>
               <View style={styles.profileAvatar}>
-                <Text style={styles.profileAvatarLabel}>MA</Text>
+                <Text style={styles.profileAvatarLabel}>{initials}</Text>
               </View>
               <View style={styles.identityInfo}>
-                <Text style={styles.profileName}>Maya Adeyemi</Text>
-                <Text style={styles.profileSub}>Junior · Westlake HS · Class of '27</Text>
+                <Text style={styles.profileName}>{displayName}</Text>
+                <Text style={styles.profileSub}>{displayEmail}</Text>
                 <View style={styles.profileTags}>
                   <View style={styles.tagAccent}>
                     <Text style={styles.tagAccentLabel}>Pre-med track</Text>
@@ -109,12 +125,22 @@ export default function ProfileScreen() {
                 key={i}
                 style={[styles.settingsRow, i < SETTINGS.length - 1 && styles.settingsBorder]}
                 activeOpacity={0.7}
+                onPress={() => {
+                  if (label === 'Edit profile') {
+                    router.push('/profile-builder');
+                  }
+                }}
               >
                 <Text style={styles.settingsLabel}>{label}</Text>
                 <Ionicons name="chevron-forward" size={14} color={PUF.textFaint} />
               </TouchableOpacity>
             ))}
           </GlassCard>
+
+          <TouchableOpacity style={styles.signOutBtn} onPress={() => void handleSignOut()} activeOpacity={0.8}>
+            <Ionicons name="log-out-outline" size={16} color={PUF.tierReach} />
+            <Text style={styles.signOutLabel}>Sign out</Text>
+          </TouchableOpacity>
 
           <View style={{ height: 90 }} />
         </ScrollView>
@@ -167,4 +193,6 @@ const styles = StyleSheet.create({
   settingsRow: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingVertical: 14 },
   settingsBorder: { borderBottomWidth: 0.5, borderBottomColor: 'rgba(255,255,255,0.08)' },
   settingsLabel: { flex: 1, fontSize: 14, color: PUF.text },
+  signOutBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, paddingVertical: 14 },
+  signOutLabel: { fontSize: 14, fontWeight: '600', color: PUF.tierReach },
 });

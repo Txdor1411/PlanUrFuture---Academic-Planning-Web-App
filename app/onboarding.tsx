@@ -1,9 +1,10 @@
+import { GlowBackground, PuffButton, PuffLogo } from '@/components/puff';
+import { PUF } from '@/constants/theme';
+import { useAuth } from '@/context/auth-context';
 import { useRouter } from 'expo-router';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Dimensions, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { GlassCard, GlowBackground, PuffButton, PuffLogo } from '@/components/puff';
-import { PUF } from '@/constants/theme';
 
 const { width } = Dimensions.get('window');
 
@@ -32,16 +33,33 @@ const SLIDES = [
 
 export default function OnboardingScreen() {
   const router = useRouter();
+  const { completeOnboarding, session } = useAuth();
   const [index, setIndex] = useState(0);
   const slide = SLIDES[index];
   const isLast = index === SLIDES.length - 1;
 
-  function advance() {
-    if (isLast) {
+  useEffect(() => {
+    if (session) {
       router.replace('/(tabs)');
+    }
+  }, [router, session]);
+
+  async function advance() {
+    if (isLast) {
+      await completeOnboarding();
+      router.replace('/sign-in');
     } else {
       setIndex(i => i + 1);
     }
+  }
+
+  async function skip() {
+    await completeOnboarding();
+    router.replace('/sign-in');
+  }
+
+  if (session) {
+    return null;
   }
 
   return (
@@ -83,9 +101,9 @@ export default function OnboardingScreen() {
           </PuffButton>
           <TouchableOpacity
             style={styles.skipBtn}
-            onPress={() => router.replace('/(tabs)')}
+            onPress={skip}
           >
-            <Text style={styles.skipLabel}>Skip</Text>
+            <Text style={styles.skipLabel}>Skip to sign in</Text>
           </TouchableOpacity>
         </View>
       </SafeAreaView>

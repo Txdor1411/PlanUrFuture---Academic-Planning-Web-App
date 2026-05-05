@@ -1,7 +1,7 @@
+import { PUF } from '@/constants/theme';
 import { LinearGradient } from 'expo-linear-gradient';
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, ViewStyle } from 'react-native';
-import { PUF } from '@/constants/theme';
 
 interface PuffButtonProps {
   children: React.ReactNode;
@@ -9,6 +9,7 @@ interface PuffButtonProps {
   variant?: 'primary' | 'outline' | 'ghost';
   style?: ViewStyle;
   full?: boolean;
+  disabled?: boolean;
 }
 
 export function PuffButton({
@@ -17,19 +18,21 @@ export function PuffButton({
   variant = 'primary',
   style,
   full = true,
+  disabled = false,
 }: PuffButtonProps) {
   if (variant === 'primary') {
     return (
       <TouchableOpacity
         onPress={onPress}
         activeOpacity={0.85}
-        style={[styles.pill, full && styles.full, style]}
+        disabled={disabled}
+        style={[styles.pill, full && styles.full, disabled && styles.disabled, style]}
       >
         <LinearGradient
           colors={[PUF.btnTop, PUF.btnMid, PUF.btnBot]}
           start={{ x: 0.5, y: 0 }}
           end={{ x: 0.5, y: 1 }}
-          style={[styles.gradient, full && styles.full]}
+          style={[styles.gradient, full && styles.full, disabled && styles.disabledGradient]}
         >
           <Text style={styles.primaryLabel}>{children}</Text>
         </LinearGradient>
@@ -62,6 +65,9 @@ const styles = StyleSheet.create({
     borderRadius: 28,
     overflow: 'hidden',
   },
+  disabled: {
+    opacity: 0.6,
+  },
   full: {
     width: '100%',
   },
@@ -69,6 +75,9 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  disabledGradient: {
+    opacity: 0.85,
   },
   primaryLabel: {
     color: '#fff',

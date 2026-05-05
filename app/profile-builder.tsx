@@ -1,10 +1,12 @@
-import { Ionicons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
-import React, { useState } from 'react';
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { GlassCard, GlowBackground, PuffButton } from '@/components/puff';
 import { PUF } from '@/constants/theme';
+import { useAuth } from '@/context/auth-context';
+import { usePersistedState } from '@/hooks/use-persisted-state';
+import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
+import React, { useMemo } from 'react';
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const ACTIVITIES = [
   { name: 'Varsity Debate', tag: 'Captain' },
@@ -19,13 +21,22 @@ const CURRENT_STEP = 4;
 
 export default function ProfileBuilderScreen() {
   const router = useRouter();
-  const [selected, setSelected] = useState(new Set([0, 1, 2]));
+  const { user } = useAuth();
+  const storageKey = user ? `@puf/profile-builder:${user.id}` : '@puf/profile-builder:guest';
+  const [selected, setSelected] = usePersistedState<number[]>(storageKey, [0, 1, 2]);
+  const selectedSet = useMemo(() => new Set(selected), [selected]);
 
   function toggle(i: number) {
-    setSelected(s => {
-      const n = new Set(s);
-      n.has(i) ? n.delete(i) : n.add(i);
-      return n;
+    setSelected(current => {
+      const next = new Set(current);
+
+      if (next.has(i)) {
+        next.delete(i);
+      } else {
+        next.add(i);
+      }
+
+      return Array.from(next).sort((a, b) => a - b);
     });
   }
 
@@ -61,7 +72,7 @@ export default function ProfileBuilderScreen() {
 
           <View style={styles.list}>
             {ACTIVITIES.map((a, i) => {
-              const sel = selected.has(i);
+              const sel = selectedSet.has(i);
               return (
                 <TouchableOpacity key={i} onPress={() => toggle(i)} activeOpacity={0.8}>
                   <GlassCard

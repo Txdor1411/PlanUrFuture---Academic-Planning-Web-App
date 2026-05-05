@@ -1,9 +1,11 @@
-import { Ionicons } from '@expo/vector-icons';
-import React, { useState } from 'react';
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { GlassCard, GlowBackground } from '@/components/puff';
 import { PUF } from '@/constants/theme';
+import { useAuth } from '@/context/auth-context';
+import { usePersistedState } from '@/hooks/use-persisted-state';
+import { Ionicons } from '@expo/vector-icons';
+import React from 'react';
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 interface Task {
   text: string;
@@ -66,7 +68,9 @@ function TaskRow({ task, onToggle }: { task: Task; onToggle: () => void }) {
 }
 
 export default function TasksScreen() {
-  const [groups, setGroups] = useState(INITIAL_GROUPS);
+  const { user } = useAuth();
+  const storageKey = user ? `@puf/tasks:${user.id}` : '@puf/tasks:guest';
+  const [groups, setGroups] = usePersistedState<Group[]>(storageKey, INITIAL_GROUPS);
 
   function toggleTask(gi: number, ti: number) {
     setGroups(gs =>
