@@ -17,7 +17,7 @@ import {
   Menu,
   X,
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 interface SidebarProps {
   user?: { email?: string; full_name?: string };
@@ -26,10 +26,10 @@ interface SidebarProps {
   setIsMobileOpen?: (open: boolean) => void;
 }
 
-export function MobileMenuButton({ 
-  onOpen 
-}: { 
-  onOpen: () => void 
+export function MobileMenuButton({
+  onOpen
+}: {
+  onOpen: () => void
 }) {
   return (
     <button
@@ -45,10 +45,16 @@ export default function Sidebar({ user, onSignOut, isMobileOpen, setIsMobileOpen
   const pathname = usePathname();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [localMobileOpen, setLocalMobileOpen] = useState(false);
-  
+
   // Use provided state or fall back to local state
   const mobileOpen = isMobileOpen !== undefined ? isMobileOpen : localMobileOpen;
   const setMobileOpen = setIsMobileOpen || setLocalMobileOpen;
+
+  useEffect(() => {
+    setMobileOpen(false);
+    // Close the drawer whenever the route changes so it doesn't stay over the page.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pathname]);
 
   const menuItems = [
     {
@@ -100,9 +106,8 @@ export default function Sidebar({ user, onSignOut, isMobileOpen, setIsMobileOpen
     <>
       {/* Desktop Sidebar */}
       <aside
-        className={`hidden lg:fixed lg:left-0 lg:top-0 lg:z-30 lg:flex lg:h-screen lg:flex-col lg:border-r lg:border-slate-700/50 lg:bg-slate-900/80 lg:backdrop-blur-xl lg:transition-all lg:duration-300 ${
-          isCollapsed ? "lg:w-20" : "lg:w-64"
-        }`}
+        className={`hidden lg:fixed lg:left-0 lg:top-0 lg:z-30 lg:flex lg:h-screen lg:flex-col lg:border-r lg:border-slate-700/50 lg:bg-slate-900/80 lg:backdrop-blur-xl lg:transition-all lg:duration-300 ${isCollapsed ? "lg:w-20" : "lg:w-64"
+          }`}
       >
         {/* Logo Section */}
         <div className="flex items-center justify-between border-b border-slate-700/50 px-6 py-4">
@@ -141,11 +146,10 @@ export default function Sidebar({ user, onSignOut, isMobileOpen, setIsMobileOpen
                 key={item.href}
                 href={item.href}
                 title={isCollapsed ? item.label : ""}
-                className={`group relative flex items-center gap-3 rounded-lg px-4 py-3 transition-all duration-200 ${
-                  active
+                className={`group relative flex items-center gap-3 rounded-lg px-4 py-3 transition-all duration-200 ${active
                     ? "bg-gradient-to-r from-sky-500/20 to-fuchsia-500/20 text-white shadow-lg shadow-sky-500/10"
                     : "text-slate-400 hover:bg-slate-800/50 hover:text-slate-200"
-                }`}
+                  }`}
               >
                 <Icon className="h-5 w-5 flex-shrink-0" />
                 {!isCollapsed && (
@@ -197,7 +201,7 @@ export default function Sidebar({ user, onSignOut, isMobileOpen, setIsMobileOpen
           />
 
           {/* Drawer Sidebar */}
-          <aside className="fixed left-0 top-0 z-50 h-screen w-64 flex-col border-r border-slate-700/50 bg-slate-900/95 backdrop-blur-xl flex lg:hidden">
+          <aside className="fixed left-0 top-0 z-50 flex h-screen w-[min(18rem,82vw)] max-w-[calc(100vw-1rem)] flex-col border-r border-slate-700/50 bg-slate-900/95 shadow-2xl backdrop-blur-xl lg:hidden">
             {/* Header with Close Button */}
             <div className="flex items-center justify-between border-b border-slate-700/50 px-6 py-4">
               <div className="flex items-center gap-2">
@@ -229,11 +233,10 @@ export default function Sidebar({ user, onSignOut, isMobileOpen, setIsMobileOpen
                     key={item.href}
                     href={item.href}
                     onClick={() => setMobileOpen(false)}
-                    className={`group relative flex items-center gap-3 rounded-lg px-4 py-3 transition-all duration-200 ${
-                      active
+                    className={`group relative flex items-center gap-3 rounded-lg px-4 py-3 transition-all duration-200 ${active
                         ? "bg-gradient-to-r from-sky-500/20 to-fuchsia-500/20 text-white shadow-lg shadow-sky-500/10"
                         : "text-slate-400 hover:bg-slate-800/50 hover:text-slate-200"
-                    }`}
+                      }`}
                   >
                     <Icon className="h-5 w-5 flex-shrink-0" />
                     <div className="min-w-0 flex-1">
