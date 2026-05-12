@@ -9,7 +9,7 @@ import {
   Briefcase,
   Calendar,
   BookOpen,
-  Users,
+  UserCircle,
   LogOut,
   ChevronLeft,
   ChevronRight,
@@ -83,15 +83,15 @@ export default function Sidebar({ user, onSignOut, isMobileOpen, setIsMobileOpen
     },
     {
       href: "/exercises",
-      label: "Exerciții",
+      label: "Invata",
       icon: BookOpen,
-      description: "Practice",
+      description: "Exerciții & teorie",
     },
     {
-      href: "/mentoring",
-      label: "Mentorat",
-      icon: Users,
-      description: "Connect",
+      href: "/profile",
+      label: "Profil",
+      icon: UserCircle,
+      description: "Contul tău",
     },
   ];
 

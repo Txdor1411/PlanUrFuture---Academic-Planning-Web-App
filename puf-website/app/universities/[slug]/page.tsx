@@ -25,6 +25,14 @@ export default async function UniversityDetailsPage({ params }: Props) {
 
   if (error || !data) notFound();
 
+  const { data: { user: authUser } } = await supabase.auth.getUser();
+  const { data: profileData } = authUser
+    ? await supabase.from("profiles").select("full_name").eq("id", authUser.id).maybeSingle()
+    : { data: null };
+  const sidebarUser = authUser
+    ? { email: authUser.email ?? undefined, full_name: profileData?.full_name ?? undefined }
+    : undefined;
+
   const uni = data as SupabaseUniversity;
   const location = formatLocation(uni.city, uni.state);
 
@@ -74,7 +82,7 @@ export default async function UniversityDetailsPage({ params }: Props) {
 
   return (
     <>
-      <Sidebar user={undefined} onSignOut={undefined} />
+      <Sidebar user={sidebarUser} onSignOut={undefined} />
       <div className="relative overflow-hidden text-slate-100 min-h-screen bg-slate-950 w-full lg:pl-64">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_0%_0%,_rgba(168,85,247,0.16),_transparent_40%),radial-gradient(circle_at_100%_0%,_rgba(56,189,248,0.16),_transparent_35%)]" />
 

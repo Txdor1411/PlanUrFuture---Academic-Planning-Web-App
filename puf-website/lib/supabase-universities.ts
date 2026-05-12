@@ -44,6 +44,7 @@ export type UniversityListItem = Pick<
   | "world_ranking_score"
   | "ownership"
   | "school_type"
+  | "sat_average"
 >;
 
 export const PAGE_SIZE = 24;

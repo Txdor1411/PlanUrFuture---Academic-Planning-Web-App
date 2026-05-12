@@ -3,6 +3,15 @@ import { NextResponse, type NextRequest } from "next/server";
 import { supabaseCookieOptions } from "@/lib/supabase/cookie-options";
 import { getSupabaseEnv, hasSupabaseEnv } from "@/lib/supabase/env";
 
+const PROTECTED_PATHS = [
+  "/dashboard",
+  "/universities",
+  "/activities",
+  "/calendar",
+  "/exercises",
+  "/profile",
+];
+
 export async function middleware(request: NextRequest) {
   if (!hasSupabaseEnv()) {
     return NextResponse.next();
@@ -30,7 +39,20 @@ export async function middleware(request: NextRequest) {
     },
   });
 
-  await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  const pathname = request.nextUrl.pathname;
+  const isProtected = PROTECTED_PATHS.some(
+    (p) => pathname === p || pathname.startsWith(p + "/")
+  );
+
+  if (isProtected && !user) {
+    const authUrl = new URL("/auth", request.url);
+    authUrl.searchParams.set("next", pathname);
+    return NextResponse.redirect(authUrl);
+  }
 
   return response;
 }

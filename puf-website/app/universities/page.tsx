@@ -4,27 +4,19 @@ import { useState } from "react";
 import Link from "next/link";
 import { UniversitySearch } from "./university-search";
 import Sidebar, { MobileMenuButton } from "@/app/components/sidebar";
+import { useSupabaseUser } from "@/lib/use-supabase-user";
 
 export default function UniversitiesPage() {
   const [isMobileOpen, setIsMobileOpen] = useState(false);
+  const user = useSupabaseUser();
   return (
     <>
-      <div className="hidden lg:block">
-        <Sidebar
-          user={undefined}
-          onSignOut={undefined}
-          isMobileOpen={isMobileOpen}
-          setIsMobileOpen={setIsMobileOpen}
-        />
-      </div>
-      <div className="lg:hidden">
-        <Sidebar
-          user={undefined}
-          onSignOut={undefined}
-          isMobileOpen={isMobileOpen}
-          setIsMobileOpen={setIsMobileOpen}
-        />
-      </div>
+      <Sidebar
+        user={user}
+        onSignOut={undefined}
+        isMobileOpen={isMobileOpen}
+        setIsMobileOpen={setIsMobileOpen}
+      />
       <div className="min-h-screen bg-slate-950 lg:pl-64">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(56,189,248,0.18),_transparent_45%)]" />
         <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-sky-400/70 to-transparent" />

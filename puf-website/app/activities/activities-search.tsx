@@ -5,15 +5,37 @@ import Link from "next/link";
 import Image from "next/image";
 import { Activity } from "@/lib/activities-data";
 import { Card } from "@/app/components/ui/card";
-import { Calendar, MapPin, Users, Tag } from "lucide-react";
+import { Calendar, MapPin, Users, Tag, LayoutList, Layers } from "lucide-react";
+import SwipeMode from "./swipe-mode";
 
-export default function ActivitiesSearch({ activities }: { activities: Activity[] }) {
+interface ActivitiesSearchProps {
+  activities: Activity[];
+  userPrograms?: string[];
+}
+
+export default function ActivitiesSearch({ activities, userPrograms = [] }: ActivitiesSearchProps) {
   const [query, setQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("");
   const [selectedCountry, setSelectedCountry] = useState<string>("");
+  const [selectedCity, setSelectedCity] = useState<string>("");
+  const [selectedMonth, setSelectedMonth] = useState<string>("");
+  const [personalizedOnly, setPersonalizedOnly] = useState(false);
+  const [viewMode, setViewMode] = useState<"list" | "swipe">("list");
 
   const categories = Array.from(new Set(activities.map((a) => a.category)));
   const countries = Array.from(new Set(activities.map((a) => a.country))).sort();
+  const cities = Array.from(
+    new Set(activities.map((a) => a.city).filter(Boolean) as string[])
+  ).sort();
+
+  const months = useMemo(() => {
+    const set = new Set<string>();
+    activities.forEach((a) => {
+      const d = new Date(a.startsAt);
+      set.add(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`);
+    });
+    return Array.from(set).sort();
+  }, [activities]);
 
   const filteredActivities = useMemo(() => {
     return activities.filter((activity) => {
@@ -21,13 +43,26 @@ export default function ActivitiesSearch({ activities }: { activities: Activity[
         activity.title.toLowerCase().includes(query.toLowerCase()) ||
         activity.description.toLowerCase().includes(query.toLowerCase()) ||
         activity.tags.some((tag) => tag.toLowerCase().includes(query.toLowerCase()));
-
       const matchesCategory = !selectedCategory || activity.category === selectedCategory;
       const matchesCountry = !selectedCountry || activity.country === selectedCountry;
+      const matchesCity = !selectedCity || activity.city === selectedCity;
+      const matchesMonth =
+        !selectedMonth ||
+        (() => {
+          const d = new Date(activity.startsAt);
+          const m = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+          return m === selectedMonth;
+        })();
+      const matchesPersonalized =
+        !personalizedOnly ||
+        userPrograms.length === 0 ||
+        activity.tags.some((tag) =>
+          userPrograms.some((p) => p.toLowerCase().includes(tag.toLowerCase()) || tag.toLowerCase().includes(p.toLowerCase()))
+        );
 
-      return matchesQuery && matchesCategory && matchesCountry;
+      return matchesQuery && matchesCategory && matchesCountry && matchesCity && matchesMonth && matchesPersonalized;
     });
-  }, [query, selectedCategory, selectedCountry, activities]);
+  }, [query, selectedCategory, selectedCountry, selectedCity, selectedMonth, personalizedOnly, activities, userPrograms]);
 
   const getCategoryColor = (category: string) => {
     const colors: Record<string, string> = {
@@ -49,25 +84,59 @@ export default function ActivitiesSearch({ activities }: { activities: Activity[
     return emojis[category] || "📌";
   };
 
+  const formatMonth = (ym: string) => {
+    const [year, month] = ym.split("-");
+    const d = new Date(parseInt(year), parseInt(month) - 1, 1);
+    return d.toLocaleDateString("ro-RO", { month: "long", year: "numeric" });
+  };
+
   return (
     <div className="space-y-6">
-      {/* Search & Filter */}
+      {/* View Toggle */}
+      <div className="flex items-center gap-3">
+        <div className="flex items-center gap-1 rounded-xl border border-white/10 bg-white/5 p-1">
+          <button
+            onClick={() => setViewMode("list")}
+            className={`flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold transition ${
+              viewMode === "list"
+                ? "bg-white text-slate-900"
+                : "text-slate-300 hover:text-white"
+            }`}
+          >
+            <LayoutList className="h-4 w-4" />
+            Listă
+          </button>
+          <button
+            onClick={() => setViewMode("swipe")}
+            className={`flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold transition ${
+              viewMode === "swipe"
+                ? "bg-white text-slate-900"
+                : "text-slate-300 hover:text-white"
+            }`}
+          >
+            <Layers className="h-4 w-4" />
+            Swipe
+          </button>
+        </div>
+      </div>
+
+      {/* Search & Filters */}
       <div className="space-y-4">
         <input
           type="text"
-          placeholder="Cauta activitati (titlu, descriere, tags)..."
+          placeholder="Caută activități (titlu, descriere, tags)..."
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           className="w-full rounded-lg border border-slate-600 bg-slate-800/50 px-4 py-3 text-white placeholder-slate-400 focus:border-sky-400 focus:outline-none focus:ring-1 focus:ring-sky-400"
         />
 
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
           <div>
-            <label className="mb-2 block text-sm font-semibold text-slate-300">Categorie</label>
+            <label className="mb-2 block text-xs font-semibold text-slate-300">Categorie</label>
             <select
               value={selectedCategory}
               onChange={(e) => setSelectedCategory(e.target.value)}
-              className="w-full rounded-lg border border-slate-600 bg-slate-800/50 px-4 py-2 text-white focus:border-sky-400 focus:outline-none focus:ring-1 focus:ring-sky-400"
+              className="w-full rounded-lg border border-slate-600 bg-slate-800/50 px-3 py-2 text-sm text-white focus:border-sky-400 focus:outline-none"
             >
               <option value="">Toate categoriile</option>
               {categories.map((cat) => (
@@ -79,36 +148,79 @@ export default function ActivitiesSearch({ activities }: { activities: Activity[
           </div>
 
           <div>
-            <label className="mb-2 block text-sm font-semibold text-slate-300">Țară</label>
+            <label className="mb-2 block text-xs font-semibold text-slate-300">Țară</label>
             <select
               value={selectedCountry}
-              onChange={(e) => setSelectedCountry(e.target.value)}
-              className="w-full rounded-lg border border-slate-600 bg-slate-800/50 px-4 py-2 text-white focus:border-sky-400 focus:outline-none focus:ring-1 focus:ring-sky-400"
+              onChange={(e) => { setSelectedCountry(e.target.value); setSelectedCity(""); }}
+              className="w-full rounded-lg border border-slate-600 bg-slate-800/50 px-3 py-2 text-sm text-white focus:border-sky-400 focus:outline-none"
             >
               <option value="">Toate țările</option>
-              {countries.map((country) => (
-                <option key={country} value={country}>
-                  {country}
-                </option>
+              {countries.map((c) => (
+                <option key={c} value={c}>{c}</option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label className="mb-2 block text-xs font-semibold text-slate-300">Oraș</label>
+            <select
+              value={selectedCity}
+              onChange={(e) => setSelectedCity(e.target.value)}
+              className="w-full rounded-lg border border-slate-600 bg-slate-800/50 px-3 py-2 text-sm text-white focus:border-sky-400 focus:outline-none"
+            >
+              <option value="">Toate orașele</option>
+              {cities.map((c) => (
+                <option key={c} value={c}>{c}</option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label className="mb-2 block text-xs font-semibold text-slate-300">Lună start</label>
+            <select
+              value={selectedMonth}
+              onChange={(e) => setSelectedMonth(e.target.value)}
+              className="w-full rounded-lg border border-slate-600 bg-slate-800/50 px-3 py-2 text-sm text-white focus:border-sky-400 focus:outline-none"
+            >
+              <option value="">Orice perioadă</option>
+              {months.map((m) => (
+                <option key={m} value={m}>{formatMonth(m)}</option>
               ))}
             </select>
           </div>
         </div>
+
+        {userPrograms.length > 0 && (
+          <label className="flex cursor-pointer items-center gap-2 text-sm text-slate-300">
+            <input
+              type="checkbox"
+              checked={personalizedOnly}
+              onChange={(e) => setPersonalizedOnly(e.target.checked)}
+              className="h-4 w-4 rounded border-white/20 bg-slate-900 text-sky-400 focus:ring-sky-400"
+            />
+            <span>
+              Afișează doar activitățile relevante pentru profilul meu
+              <span className="ml-1 text-sky-300">✨</span>
+            </span>
+          </label>
+        )}
       </div>
 
       {/* Results Count */}
       <p className="text-sm text-slate-400">
-        Gasiti <span className="font-semibold text-white">{filteredActivities.length}</span> activitate
-        {filteredActivities.length !== 1 ? "i" : ""}
+        {filteredActivities.length === activities.length
+          ? `${activities.length} activități disponibile`
+          : `${filteredActivities.length} din ${activities.length} activități`}
       </p>
 
-      {/* Activities Grid */}
-      {filteredActivities.length > 0 ? (
+      {/* Content */}
+      {viewMode === "swipe" ? (
+        <SwipeMode activities={filteredActivities.length > 0 ? filteredActivities : activities} />
+      ) : filteredActivities.length > 0 ? (
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
           {filteredActivities.map((activity) => (
             <Link key={activity.slug} href={`/activities/${activity.slug}`}>
               <Card className="group space-y-4 border-slate-600/50 transition-all hover:border-slate-500 hover:shadow-lg hover:shadow-slate-900/50">
-                {/* Image */}
                 {activity.imageUrl && (
                   <div className="overflow-hidden rounded-lg">
                     <Image
@@ -122,41 +234,25 @@ export default function ActivitiesSearch({ activities }: { activities: Activity[
                     />
                   </div>
                 )}
-
-                {/* Category Badge */}
                 <div className={`inline-flex items-center gap-2 rounded-lg border px-3 py-1 text-xs font-semibold ${getCategoryColor(activity.category)}`}>
                   <span>{getCategoryEmoji(activity.category)}</span>
                   <span>{activity.category.charAt(0).toUpperCase() + activity.category.slice(1).replace("-", " ")}</span>
                 </div>
-
-                {/* Title */}
                 <h3 className="text-lg font-semibold text-white group-hover:text-sky-300">{activity.title}</h3>
-
-                {/* Description */}
                 <p className="line-clamp-2 text-sm text-slate-300">{activity.description}</p>
-
-                {/* Meta Information */}
                 <div className="space-y-2 text-sm text-slate-400">
                   <div className="flex items-center gap-2">
                     <MapPin className="h-4 w-4 flex-shrink-0 text-amber-300" />
                     <span>{activity.city && `${activity.city}, `}{activity.country}</span>
                   </div>
-
                   <div className="flex items-center gap-2">
                     <Calendar className="h-4 w-4 flex-shrink-0 text-emerald-300" />
                     <span className="text-xs">
-                      {new Date(activity.startsAt).toLocaleDateString("ro-RO", {
-                        month: "short",
-                        day: "numeric",
-                      })}{" "}
-                      -{" "}
-                      {new Date(activity.endsAt).toLocaleDateString("ro-RO", {
-                        month: "short",
-                        day: "numeric",
-                      })}
+                      {new Date(activity.startsAt).toLocaleDateString("ro-RO", { month: "short", day: "numeric" })}
+                      {" – "}
+                      {new Date(activity.endsAt).toLocaleDateString("ro-RO", { month: "short", day: "numeric" })}
                     </span>
                   </div>
-
                   {activity.participants && (
                     <div className="flex items-center gap-2">
                       <Users className="h-4 w-4 flex-shrink-0 text-blue-300" />
@@ -164,8 +260,6 @@ export default function ActivitiesSearch({ activities }: { activities: Activity[
                     </div>
                   )}
                 </div>
-
-                {/* Tags */}
                 {activity.tags.length > 0 && (
                   <div className="flex flex-wrap gap-1 pt-2">
                     {activity.tags.slice(0, 2).map((tag) => (
@@ -174,11 +268,11 @@ export default function ActivitiesSearch({ activities }: { activities: Activity[
                         {tag}
                       </span>
                     ))}
-                    {activity.tags.length > 2 && <span className="text-xs text-slate-400">+{activity.tags.length - 2}</span>}
+                    {activity.tags.length > 2 && (
+                      <span className="text-xs text-slate-400">+{activity.tags.length - 2}</span>
+                    )}
                   </div>
                 )}
-
-                {/* CTA */}
                 <div className="flex items-center justify-between pt-2">
                   <span className="text-xs font-semibold text-sky-300">Vezi detalii →</span>
                   {activity.deadline && (
@@ -193,7 +287,7 @@ export default function ActivitiesSearch({ activities }: { activities: Activity[
         </div>
       ) : (
         <Card className="border-slate-600/30 bg-slate-800/20 p-8 text-center">
-          <p className="text-slate-400">Nu au fost gasit activitati care sa se potriveasca criteriilor.</p>
+          <p className="text-slate-400">Nu au fost găsite activități care să se potrivească criteriilor.</p>
         </Card>
       )}
     </div>

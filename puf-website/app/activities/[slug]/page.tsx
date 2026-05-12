@@ -6,6 +6,8 @@ import { Card } from "@/app/components/ui/card";
 import { Button } from "@/app/components/ui/button";
 import { ExternalLink, Calendar, MapPin, Users, Award, DollarSign, Target, ArrowLeft } from "lucide-react";
 import Sidebar from "@/app/components/sidebar";
+import { createServerSupabaseClient } from "@/lib/supabase/server";
+import AddToCalendarButton from "./add-to-calendar-button";
 
 export async function generateStaticParams() {
   return activities.map((activity) => ({
@@ -35,6 +37,15 @@ export default async function ActivityDetailPage({ params }: { params: Promise<{
     notFound();
   }
 
+  const supabase = await createServerSupabaseClient();
+  const { data: { user: authUser } } = await supabase.auth.getUser();
+  const { data: profile } = authUser
+    ? await supabase.from("profiles").select("full_name").eq("id", authUser.id).maybeSingle()
+    : { data: null };
+  const sidebarUser = authUser
+    ? { email: authUser.email ?? undefined, full_name: profile?.full_name ?? undefined }
+    : undefined;
+
   const getCategoryColor = (category: string) => {
     const colors: Record<string, { bg: string; text: string; border: string }> = {
       conference: { bg: "bg-sky-900/20", text: "text-sky-300", border: "border-sky-300/30" },
@@ -61,8 +72,7 @@ export default async function ActivityDetailPage({ params }: { params: Promise<{
 
   return (
     <>
-      {/* Sidebar */}
-      <Sidebar user={undefined} onSignOut={undefined} />
+      <Sidebar user={sidebarUser} onSignOut={undefined} />
       {/* Main Content */}
       <div className="min-h-screen bg-slate-950">
       <main className="mx-auto flex min-h-screen w-full max-w-6xl flex-col gap-8 px-6 py-10 sm:px-8 lg:px-10">
@@ -125,7 +135,7 @@ export default async function ActivityDetailPage({ params }: { params: Promise<{
             {activity.applicationUrl && (
               <a href={activity.applicationUrl} target="_blank" rel="noopener noreferrer">
                 <Button variant="primary" className="inline-flex items-center gap-2">
-                  Inregistreaza-te acum
+                  Înregistrează-te acum
                   <ExternalLink className="h-4 w-4" />
                 </Button>
               </a>
@@ -133,10 +143,16 @@ export default async function ActivityDetailPage({ params }: { params: Promise<{
             {activity.sourceUrl && (
               <a href={activity.sourceUrl} target="_blank" rel="noopener noreferrer">
                 <Button variant="ghost" className="inline-flex items-center gap-2">
-                  Afla mai mult
+                  Află mai mult
                   <ExternalLink className="h-4 w-4" />
                 </Button>
               </a>
+            )}
+            {activity.deadline && (
+              <AddToCalendarButton
+                title={`Deadline: ${activity.title}`}
+                date={activity.deadline}
+              />
             )}
           </div>
         </div>

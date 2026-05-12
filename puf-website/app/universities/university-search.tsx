@@ -11,12 +11,21 @@ import {
   type UniversityListItem,
 } from "@/lib/supabase-universities";
 
+const SAT_RANGES = [
+  { label: "Orice scor SAT", value: "" },
+  { label: "< 1200", value: "low" },
+  { label: "1200 – 1400", value: "mid" },
+  { label: "> 1400", value: "high" },
+];
+
 export function UniversitySearch() {
   const [universities, setUniversities] = useState<UniversityListItem[]>([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
   const [query, setQuery] = useState("");
   const [country, setCountry] = useState("");
+  const [ownership, setOwnership] = useState("");
+  const [satRange, setSatRange] = useState("");
   const [countries, setCountries] = useState<{ country: string; total: number }[]>([]);
   const [loading, setLoading] = useState(true);
   const [fetchError, setFetchError] = useState<string | null>(null);
@@ -24,7 +33,6 @@ export function UniversitySearch() {
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const supabase = createClient();
 
-  // Load distinct countries with counts via DB function
   useEffect(() => {
     supabase
       .rpc("distinct_university_countries")
@@ -35,7 +43,7 @@ export function UniversitySearch() {
   }, []);
 
   const fetchUniversities = useCallback(
-    async (q: string, ct: string, pg: number) => {
+    async (q: string, ct: string, own: string, sat: string, pg: number) => {
       setLoading(true);
       const from = (pg - 1) * PAGE_SIZE;
       const to = from + PAGE_SIZE - 1;
@@ -43,7 +51,7 @@ export function UniversitySearch() {
       let qb = supabase
         .from("universities")
         .select(
-          "id,slug,name,city,state,country,website,acceptance_rate,tuition_out_of_state,world_ranking,world_ranking_score,ownership,school_type",
+          "id,slug,name,city,state,country,website,acceptance_rate,tuition_out_of_state,world_ranking,world_ranking_score,ownership,school_type,sat_average",
           { count: "exact" }
         )
         .order("world_ranking", { ascending: true, nullsFirst: false })
@@ -52,6 +60,10 @@ export function UniversitySearch() {
 
       if (q) qb = qb.ilike("name", `%${q}%`);
       if (ct) qb = qb.eq("country", ct);
+      if (own) qb = qb.ilike("ownership", `%${own}%`);
+      if (sat === "low") qb = qb.lt("sat_average", 1200);
+      if (sat === "mid") qb = qb.gte("sat_average", 1200).lte("sat_average", 1400);
+      if (sat === "high") qb = qb.gt("sat_average", 1400);
 
       const { data, count, error } = await qb;
       if (error) {
@@ -69,8 +81,8 @@ export function UniversitySearch() {
   );
 
   useEffect(() => {
-    fetchUniversities(query, country, page);
-  }, [fetchUniversities, query, country, page]);
+    fetchUniversities(query, country, ownership, satRange, page);
+  }, [fetchUniversities, query, country, ownership, satRange, page]);
 
   const handleQueryChange = (value: string) => {
     if (debounceRef.current) clearTimeout(debounceRef.current);
@@ -80,22 +92,23 @@ export function UniversitySearch() {
     }, 350);
   };
 
-  const handleCountryChange = (value: string) => {
+  const handleFilterChange = (setter: (v: string) => void) => (value: string) => {
     setPage(1);
-    setCountry(value);
+    setter(value);
   };
 
   const totalPages = Math.ceil(total / PAGE_SIZE);
 
   return (
     <section className="space-y-6">
-      <div className="grid gap-4 rounded-2xl border border-white/10 bg-slate-900/65 p-4 shadow-[0_20px_50px_rgba(2,6,23,0.45)] backdrop-blur sm:grid-cols-[minmax(0,2fr)_minmax(200px,1fr)] sm:p-6">
+      {/* Search + Filters */}
+      <div className="space-y-4 rounded-2xl border border-white/10 bg-slate-900/65 p-4 shadow-[0_20px_50px_rgba(2,6,23,0.45)] backdrop-blur sm:p-6">
         <div className="space-y-2">
           <label
             htmlFor="search"
             className="text-xs font-semibold uppercase tracking-[0.15em] text-slate-300"
           >
-            Cauta universitate
+            Caută universitate
           </label>
           <input
             id="search"
@@ -106,26 +119,66 @@ export function UniversitySearch() {
           />
         </div>
 
-        <div className="space-y-2">
-          <label
-            htmlFor="country"
-            className="text-xs font-semibold uppercase tracking-[0.15em] text-slate-300"
-          >
-            Țară
-          </label>
-          <select
-            id="country"
-            value={country}
-            onChange={(e) => handleCountryChange(e.target.value)}
-            className="w-full rounded-xl border border-white/15 bg-slate-950/80 px-4 py-3 text-sm text-white outline-none transition focus:border-sky-300/70"
-          >
-            <option value="">Toate țările</option>
-            {countries.map((c) => (
-              <option key={c.country} value={c.country}>
-                {c.country} ({c.total})
-              </option>
-            ))}
-          </select>
+        <div className="grid gap-3 sm:grid-cols-3">
+          <div className="space-y-2">
+            <label
+              htmlFor="country"
+              className="text-xs font-semibold uppercase tracking-[0.15em] text-slate-300"
+            >
+              Țară
+            </label>
+            <select
+              id="country"
+              value={country}
+              onChange={(e) => handleFilterChange(setCountry)(e.target.value)}
+              className="w-full rounded-xl border border-white/15 bg-slate-950/80 px-4 py-3 text-sm text-white outline-none transition focus:border-sky-300/70"
+            >
+              <option value="">Toate țările</option>
+              {countries.map((c) => (
+                <option key={c.country} value={c.country}>
+                  {c.country} ({c.total})
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="space-y-2">
+            <label
+              htmlFor="ownership"
+              className="text-xs font-semibold uppercase tracking-[0.15em] text-slate-300"
+            >
+              Tip
+            </label>
+            <select
+              id="ownership"
+              value={ownership}
+              onChange={(e) => handleFilterChange(setOwnership)(e.target.value)}
+              className="w-full rounded-xl border border-white/15 bg-slate-950/80 px-4 py-3 text-sm text-white outline-none transition focus:border-sky-300/70"
+            >
+              <option value="">Public & Privat</option>
+              <option value="Public">Public</option>
+              <option value="Private">Private</option>
+            </select>
+          </div>
+
+          <div className="space-y-2">
+            <label
+              htmlFor="sat"
+              className="text-xs font-semibold uppercase tracking-[0.15em] text-slate-300"
+            >
+              SAT mediu
+            </label>
+            <select
+              id="sat"
+              value={satRange}
+              onChange={(e) => handleFilterChange(setSatRange)(e.target.value)}
+              className="w-full rounded-xl border border-white/15 bg-slate-950/80 px-4 py-3 text-sm text-white outline-none transition focus:border-sky-300/70"
+            >
+              {SAT_RANGES.map((r) => (
+                <option key={r.value} value={r.value}>{r.label}</option>
+              ))}
+            </select>
+          </div>
         </div>
       </div>
 
@@ -157,7 +210,6 @@ export function UniversitySearch() {
               key={university.slug}
               className="group rounded-2xl border border-white/10 bg-slate-900/60 p-5 transition hover:border-sky-300/40 hover:bg-slate-900"
             >
-              {/* Top row: country + rank badge + ownership */}
               <div className="mb-3 flex items-center justify-between gap-2">
                 <p className="text-xs font-semibold uppercase tracking-[0.14em] text-sky-300">
                   {university.country ?? "United States"}
@@ -176,23 +228,18 @@ export function UniversitySearch() {
                 </div>
               </div>
 
-              <h2 className="text-lg font-semibold text-white">
-                {university.name}
-              </h2>
+              <h2 className="text-lg font-semibold text-white">{university.name}</h2>
               <p className="mt-1 text-sm text-slate-400">
                 {formatLocation(university.city, university.state)}
               </p>
 
               <div className="mt-4 grid grid-cols-2 gap-3 text-sm">
-                {/* Box 1: always acceptance rate */}
                 <div className="rounded-xl border border-white/10 bg-white/5 p-3">
                   <p className="text-xs uppercase tracking-wide text-slate-400">Acceptance</p>
                   <p className="mt-1 text-white">
                     {formatAcceptanceRate(university.acceptance_rate)}
                   </p>
                 </div>
-
-                {/* Box 2: tuition if available, else website domain */}
                 <div className="rounded-xl border border-white/10 bg-white/5 p-3">
                   <p className="text-xs uppercase tracking-wide text-slate-400">
                     {university.tuition_out_of_state !== null ? "Tuition" : "Website"}
@@ -217,36 +264,12 @@ export function UniversitySearch() {
                 </div>
               </div>
 
-              {university.acceptance_rate !== null || university.tuition_out_of_state !== null ? (
-                <Link
-                  href={`/universities/${university.slug}`}
-                  className="mt-5 inline-flex items-center rounded-full border border-sky-300/40 bg-sky-500/10 px-4 py-2 text-sm font-medium text-sky-100 transition group-hover:border-sky-200 group-hover:bg-sky-500/20"
-                >
-                  Vezi pagina facultatii
-                </Link>
-              ) : university.website ? (
-                <a
-                  href={university.website}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={(e) => e.stopPropagation()}
-                  className="mt-5 inline-flex items-center gap-2 rounded-full border border-sky-300/40 bg-sky-500/10 px-4 py-2 text-sm font-medium text-sky-100 transition group-hover:border-sky-200 group-hover:bg-sky-500/20"
-                >
-                  Deschide website
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
-                    <polyline points="15 3 21 3 21 9"/>
-                    <line x1="10" y1="14" x2="21" y2="3"/>
-                  </svg>
-                </a>
-              ) : (
-                <Link
-                  href={`/universities/${university.slug}`}
-                  className="mt-5 inline-flex items-center rounded-full border border-sky-300/40 bg-sky-500/10 px-4 py-2 text-sm font-medium text-sky-100 transition group-hover:border-sky-200 group-hover:bg-sky-500/20"
-                >
-                  Vezi pagina facultatii
-                </Link>
-              )}
+              <Link
+                href={`/universities/${university.slug}`}
+                className="mt-5 inline-flex items-center rounded-full border border-sky-300/40 bg-sky-500/10 px-4 py-2 text-sm font-medium text-sky-100 transition group-hover:border-sky-200 group-hover:bg-sky-500/20"
+              >
+                Vezi detalii →
+              </Link>
             </article>
           ))}
         </div>
@@ -254,14 +277,14 @@ export function UniversitySearch() {
 
       {!loading && fetchError && (
         <div className="rounded-2xl border border-red-400/30 bg-red-500/10 p-5 text-sm text-red-200">
-          <p className="font-semibold mb-1">Eroare la incarcarea datelor</p>
+          <p className="font-semibold mb-1">Eroare la încărcarea datelor</p>
           <p className="font-mono text-xs text-red-300">{fetchError}</p>
         </div>
       )}
 
       {!loading && !fetchError && universities.length === 0 && (
         <div className="rounded-2xl border border-amber-300/30 bg-amber-500/10 p-5 text-sm text-amber-100">
-          Nu am gasit rezultate. Incearca un alt nume sau selecteaza o alta tara.
+          Nu am găsit rezultate. Încearcă un alt nume sau modifică filtrele.
         </div>
       )}
 
@@ -282,7 +305,7 @@ export function UniversitySearch() {
             disabled={page === totalPages}
             className="rounded-xl border border-white/15 bg-white/5 px-4 py-2 text-sm text-slate-300 transition disabled:opacity-40 hover:border-sky-300/40 hover:text-white"
           >
-            Urmator
+            Următor
           </button>
         </div>
       )}
