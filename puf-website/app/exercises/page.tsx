@@ -30,7 +30,7 @@ export default function ExercisesPage() {
         />
       </div>
 
-      <div className="min-h-screen bg-slate-950">
+      <div className="min-h-screen bg-slate-950 lg:pl-64">
         <main className="mx-auto flex min-h-screen w-full max-w-6xl flex-col gap-8 px-6 py-10 sm:px-8 lg:px-10">
           <header className="mb-4 flex items-center justify-between gap-4">
             <div className="flex-1 space-y-4">
